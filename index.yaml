@@ -1,0 +1,20 @@
+apiVersion: v1
+entries:
+  patchwork:
+  - apiVersion: v2
+    appVersion: 0.1.0
+    created: "2023-06-18T23:55:30.507263338Z"
+    dependencies:
+    - name: redis
+      repository: https://groundhog2k.github.io/helm-charts/
+      version: 0.6.12
+    description: A Helm chart for Kubernetes
+    digest: c552cbc257347a066bda1889f01b344910754edb703b207b74d46c2e7145f579
+    maintainers:
+    - name: bryopsida
+    name: patchwork
+    type: application
+    urls:
+    - https://github.com/bryopsida/patchwork/releases/download/patchwork-0.2.1/patchwork-0.2.1.tgz
+    version: 0.2.1
+generated: "2023-06-18T23:55:30.507268538Z"
