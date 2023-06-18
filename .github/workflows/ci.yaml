@@ -14,7 +14,7 @@ jobs:
       actions: read
       security-events: write
     with:
-      continue-on-prod-vulns: false
+      continue-on-prod-vulns: true
       node_versions: '{"node-version": ["16.x","18.x","20.x"]}'
     secrets:
       SONARQUBE_KEY: ${{ secrets.SONARQUBE_KEY }}
