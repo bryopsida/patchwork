@@ -1,0 +1,12 @@
+{{- if not .Values.dotenvSecretName }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "patchwork.dotenv-secret-name" . }}
+type: Opaque
+stringData:
+  .env: |-
+    PATCHWORK_REDIS_HOST={{ default (printf "%s-redis.%s.svc" .Release.Name .Release.Namespace) .Values.redis.host }}
+    PATCHWORK_REDIS_PORT={{ default "6379" .Values.redis.port | int }}
+
+{{- end }}

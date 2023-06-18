@@ -47,6 +47,14 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: dotenv
+              mountPath: /usr/src/app/.env
+              subPath: .env
+      volumes:
+        - name: dotenv
+          secret:
+            secretName: {{ include "patchwork.dotenv-secret-name" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

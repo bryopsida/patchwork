@@ -12,7 +12,7 @@
     "minikube:start": "minikube start --memory=4192m --disk-size=8g --cpus=2 --addons=[ingress,storage-provisioner,default-storageclass,metrics-server]",
     "minikube:stop": "minikube stop",
     "minikube:delete": "minikube delete",
-    "minikube:copyImage": "minikube image load ghcr.io/bryopsida/patchwork:local",
+    "minikube:copyImage": "minikube image load ghcr.io/bryopsida/patchwork:local --overwrite=true",
     "helm:template": "helm template patchwork ./charts/patchwork/",
     "helm:deploy": "helm upgrade --install patchwork ./charts/patchwork/ --set image.tag=local --set image.pullPolicy=IfNotPresent --debug --wait",
     "helm:test": "helm test patchwork",
