@@ -8,3 +8,5 @@ dependencies:
   - name: redis
     repository: https://groundhog2k.github.io/helm-charts/
     version: 0.6.12
+maintainers:
+  - name: bryopsida
