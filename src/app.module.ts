@@ -8,6 +8,7 @@ import { AnalyzerModule } from './analyzer/analyzer.module'
 import { PatcherModule } from './patcher/patcher.module'
 import { BullModule } from '@nestjs/bull'
 import { ConnOptionsService } from './common/conn-options.service'
+import { ScheduleModule } from '@nestjs/schedule'
 
 const connOptionsService = new ConnOptionsService()
 
@@ -15,6 +16,7 @@ const connOptionsService = new ConnOptionsService()
   imports: [
     ConfigModule.forRoot(),
     LoggerModule.forRoot(),
+    ScheduleModule.forRoot(),
     BullModule.forRoot({
       redis: connOptionsService.getRedisOptions().options,
     }),
