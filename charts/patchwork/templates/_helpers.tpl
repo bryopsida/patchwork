@@ -60,3 +60,7 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "patchwork.dotenv-secret-name" -}}
+{{- default (printf "%s-dotenv" .Release.Name) .Values.dotenvSecretName }}
+{{- end }}
