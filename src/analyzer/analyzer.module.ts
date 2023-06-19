@@ -15,6 +15,9 @@ import { ImageDescriptorWorker } from './image-descriptor.consumer'
     BullModule.registerQueue({
       name: 'analyzer.check.updates',
     }),
+    BullModule.registerQueue({
+      name: 'patcher.update',
+    }),
     KubernetesModule,
   ],
   providers: [

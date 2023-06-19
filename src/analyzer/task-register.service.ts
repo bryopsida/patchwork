@@ -19,7 +19,7 @@ export class TaskRegisterService {
       {},
       {
         repeat: {
-          every: 15000,
+          every: 120000,
         },
         attempts: -1,
         backoff: {

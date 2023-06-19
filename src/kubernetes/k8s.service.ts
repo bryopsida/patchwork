@@ -9,6 +9,7 @@ import {
   V1LabelSelector,
   V1Pod,
   V1StatefulSet,
+  PatchUtils,
 } from '@kubernetes/client-node'
 
 export enum ResourceType {
@@ -37,6 +38,7 @@ export interface ImageDescriptor {
 
 export interface IK8sService {
   getImageList(): Promise<Array<ImageDescriptor>>
+  triggerRollingUpdate(resource: Resource): Promise<void>
 }
 
 function getSelector(
@@ -173,5 +175,70 @@ export class K8sService implements IK8sService {
     )
       .flat()
       .filter((obj) => obj != null)
+  }
+
+  async triggerRollingUpdate(resource: Resource): Promise<void> {
+    // looking at kubectl implementation, it just updates an annotation `kubectl.kubernetes.io/restartedAt: RFC3339`
+    // lets not re-use that key but do the same thing so
+    // `patchwork/restartedAt: RFC3339`
+    // send a patch obj to the API
+    const patches = [
+      {
+        op: 'replace',
+        path: '/spec/template/metadata/annotations',
+        value: {
+          'patchwork/restartedAt': new Date().toISOString(),
+        },
+      },
+    ]
+    const reqOptions = {
+      headers: { 'Content-type': PatchUtils.PATCH_FORMAT_JSON_PATCH },
+    }
+    switch (resource.type) {
+      case ResourceType.DAEMONSET:
+        await this.appClient.patchNamespacedDaemonSet(
+          resource.name,
+          resource.namespace,
+          patches,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          reqOptions
+        )
+        break
+      case ResourceType.DEPLOYMENT:
+        await this.appClient.patchNamespacedDeployment(
+          resource.name,
+          resource.namespace,
+          patches,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          reqOptions
+        )
+        break
+      case ResourceType.STATEFULSET:
+        await this.appClient.patchNamespacedStatefulSet(
+          resource.name,
+          resource.namespace,
+          patches,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+          reqOptions
+        )
+        break
+    }
+    this.logger.warn(
+      'Rollout requested for %s in namespace %s',
+      resource.name,
+      resource.namespace
+    )
   }
 }

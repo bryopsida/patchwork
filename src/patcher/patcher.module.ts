@@ -1,8 +1,15 @@
 import { Module } from '@nestjs/common'
-import { FetchService } from './fetch.service'
-import { RolloutService } from './rollout.service'
+import { BullModule } from '@nestjs/bull'
+import { UpdateWorker } from './update.consumer'
+import { KubernetesModule } from 'src/kubernetes/kubernetes.module'
 
 @Module({
-  providers: [FetchService, RolloutService],
+  imports: [
+    BullModule.registerQueue({
+      name: 'patcher.update',
+    }),
+    KubernetesModule,
+  ],
+  providers: [UpdateWorker],
 })
 export class PatcherModule {}
