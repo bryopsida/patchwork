@@ -3,7 +3,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ .Releease.Name }}-patchwork-updater
+  name: {{ .Release.Name }}-patchwork-updater
 rules:
 # need to be able to fetch pull secrets to interact with private registries
 - apiGroups: [""]
@@ -29,6 +29,6 @@ subjects:
   namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ .Releease.Name }}-patchwork-updater
+  name: {{ .Release.Name }}-patchwork-updater
   apiGroup: rbac.authorization.k8s.io
 {{- end }}

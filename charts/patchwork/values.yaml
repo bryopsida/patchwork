@@ -15,7 +15,7 @@ fullnameOverride: ''
 
 rbac:
   # if set, the chart will create a clusterrole and rolebinding to give it the permissions its needs
-  create: true
+  create: truewq
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -65,11 +65,11 @@ ingress:
 
 resources:
   limits:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 500m
+    memory: 256Mi
   requests:
-    cpu: 100m
-    memory: 128Mi
+    cpu: 250m
+    memory: 256Mi
 
 autoscaling:
   enabled: false
