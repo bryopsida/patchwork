@@ -65,7 +65,8 @@ function getImageRepo(container: V1Container): string {
 }
 
 function getImageTag(container: V1Container): string {
-  return container.image.split(':')[0]
+  const repo = getImageRepo(container)
+  return container.image.substring(repo.length + 1).split('@')[0]
 }
 
 function getImageHash(container: V1Container, pod: V1Pod): string {

@@ -26,7 +26,7 @@ export class ImageListWorker {
       // push jobs into the queue
       for (const image of images) {
         await this.updateCheckQueue.add(image, {
-          attempts: 3,
+          attempts: 1,
         })
       }
       return {
