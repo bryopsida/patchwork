@@ -9,13 +9,14 @@ import { PatcherModule } from './patcher/patcher.module'
 import { BullModule } from '@nestjs/bull'
 import { ConnOptionsService } from './common/conn-options.service'
 import { ScheduleModule } from '@nestjs/schedule'
+import { KubernetesModule } from './kubernetes/kubernetes.module'
 
 const connOptionsService = new ConnOptionsService()
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
     LoggerModule.forRoot(),
+    ConfigModule.forRoot(),
     ScheduleModule.forRoot(),
     BullModule.forRoot({
       redis: connOptionsService.getRedisOptions().options,
@@ -23,6 +24,7 @@ const connOptionsService = new ConnOptionsService()
     HealthModule,
     AnalyzerModule,
     PatcherModule,
+    KubernetesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

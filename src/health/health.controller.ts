@@ -5,7 +5,7 @@ import {
   HealthCheck,
   MicroserviceHealthIndicator,
 } from '@nestjs/terminus'
-import { ConnOptionsService } from 'src/common/conn-options.service'
+import { ConnOptionsService } from '../common/conn-options.service'
 
 @Controller('health')
 export class HealthController {
