@@ -13,11 +13,11 @@ import {
 
 export enum ResourceType {
   // eslint-disable-next-line no-unused-vars
-  DEPLOYMENT,
+  DEPLOYMENT = 'deployment',
   // eslint-disable-next-line no-unused-vars
-  STATEFULSET,
+  STATEFULSET = 'statefulset',
   // eslint-disable-next-line no-unused-vars
-  DAEMONSET,
+  DAEMONSET = 'daemonset',
 }
 
 export interface Resource {
@@ -31,6 +31,8 @@ export interface ImageDescriptor {
   tag: string
   hash: string
   owner: Resource
+  nodes: string[]
+  arch: string
 }
 
 export interface IK8sService {
@@ -48,13 +50,20 @@ async function getFirstPod(
   namespace: string,
   client: CoreV1Api
 ): Promise<V1Pod> {
+  let selectorString = ''
+  for (const [key, value] of Object.entries(selector.matchLabels)) {
+    if (selectorString.length !== 0) {
+      selectorString += ','
+    }
+    selectorString += `${key}=${value}`
+  }
   const resp = await client.listNamespacedPod(
     namespace,
     null,
     null,
     null,
     null,
-    selector.matchLabels.app
+    selectorString
   )
   if (resp.body.items.length === 0) return null
   return resp.body.items[0]
@@ -101,12 +110,21 @@ async function getImageDescriptors(
     controllerObj.metadata.namespace,
     coreClient
   )
-  if (pod == null) return null
+  if (pod == null) {
+    return null
+  }
   return pod.spec.containers.map((container: V1Container): ImageDescriptor => {
     return {
       repository: getImageRepo(container),
       tag: getImageTag(container),
       hash: getImageHash(container, pod),
+      // TODO: find nodes with this image in their cache, do not try and use the active pod list which is always in flux during rollouts/scaling etc
+      nodes: [],
+      // For now we are going to sample based on this pod, in the real world their could be mixed usage in non homogenus clusters but
+      // we aren't dealing with that yet
+      //  TODO: need to pull node information from pod.spec.nodeName and get the arch from its spec.nodeInfo.architecture or spec.metadata.labels.kubernetes.io/arch
+      // current test cluster is
+      arch: 'arm64',
       owner: {
         type: getResourceType(controllerObj),
         namespace: controllerObj.metadata.namespace,
@@ -128,7 +146,7 @@ export class K8sService implements IK8sService {
   }
 
   async getImageList(): Promise<ImageDescriptor[]> {
-    this.logger.log('Fetching images from k8s API')
+    this.logger.debug('Fetching images from k8s API')
     const allDeploymentsProm = this.appClient.listDeploymentForAllNamespaces()
     const allDaemonsetsProm = this.appClient.listDaemonSetForAllNamespaces()
     const allStatefulsetsProm = this.appClient.listStatefulSetForAllNamespaces()
@@ -143,7 +161,7 @@ export class K8sService implements IK8sService {
       .map((obj) => obj.body.items)
       .flat()
 
-    this.logger.log('Have a list of images, processing it')
+    this.logger.debug('Have a list of images, processing it')
 
     // transform the mixed list of controller objs to image descriptors
     return (
