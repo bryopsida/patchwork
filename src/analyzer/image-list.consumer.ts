@@ -1,7 +1,7 @@
 import { Processor, Process, InjectQueue } from '@nestjs/bull'
 import { Inject, Logger } from '@nestjs/common'
 import { Job, Queue } from 'bull'
-import { IK8sService } from 'src/kubernetes/k8s.service'
+import { IK8sService } from '../kubernetes/k8s.service'
 
 @Processor('analyzer.fetch.imagelist')
 export class ImageListWorker {

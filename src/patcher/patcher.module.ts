@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 import { BullModule } from '@nestjs/bull'
 import { UpdateWorker } from './update.consumer'
-import { KubernetesModule } from 'src/kubernetes/kubernetes.module'
+import { KubernetesModule } from '../kubernetes/kubernetes.module'
 
 @Module({
   imports: [

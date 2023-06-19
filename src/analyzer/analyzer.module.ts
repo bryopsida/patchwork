@@ -4,7 +4,7 @@ import { RegistryService } from './registry.service'
 import { BullModule } from '@nestjs/bull'
 import { ImageListWorker } from './image-list.consumer'
 import { TaskRegisterService } from './task-register.service'
-import { KubernetesModule } from 'src/kubernetes/kubernetes.module'
+import { KubernetesModule } from '../kubernetes/kubernetes.module'
 import { ImageDescriptorWorker } from './image-descriptor.consumer'
 
 @Module({
