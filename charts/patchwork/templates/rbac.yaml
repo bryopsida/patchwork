@@ -1,0 +1,34 @@
+{{- if .Values.rbac.create }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Releease.Name }}-patchwork-updater
+rules:
+# need to be able to fetch pull secrets to interact with private registries
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
+# meed to to be able to fetch indivudal pods to lookup image hashes
+# need to be able to lookup images on node and the node arch
+- apiGroups: [""]
+  resources: ["pods", "nodes"]
+  verbs: ["get", "list", "watch"]
+# need to be able to lookup/list and patch apps
+- apiGroups: ["apps"]
+  resources: ["deployments", "daemonsets", "statefulsets"]
+  verbs: ["get", "list", "watch", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Release.Name }}-patchwork-updater
+subjects:
+- kind: ServiceAccount
+  name: {{ include "nestjs-starter.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ .Releease.Name }}-patchwork-updater
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

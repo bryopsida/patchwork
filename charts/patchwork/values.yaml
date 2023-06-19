@@ -13,6 +13,9 @@ imagePullSecrets: []
 nameOverride: ''
 fullnameOverride: ''
 
+rbac:
+  # if set, the chart will create a clusterrole and rolebinding to give it the permissions its needs
+  create: true
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
