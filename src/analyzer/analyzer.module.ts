@@ -4,6 +4,7 @@ import { RegistryService } from './registry.service'
 import { BullModule } from '@nestjs/bull'
 import { ImageListWorker } from './image-list.consumer'
 import { TaskRegisterService } from './task-register.service'
+import { KubernetesModule } from 'src/kubernetes/kubernetes.module'
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { TaskRegisterService } from './task-register.service'
     BullModule.registerQueue({
       name: 'analyzer.check.updates',
     }),
+    KubernetesModule,
   ],
   providers: [
     ImageService,
