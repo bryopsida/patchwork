@@ -10,6 +10,7 @@ import {
   V1Pod,
   V1StatefulSet,
   PatchUtils,
+  V1Node,
 } from '@kubernetes/client-node'
 
 export enum ResourceType {
@@ -45,6 +46,13 @@ function getSelector(
   controllerObj: V1StatefulSet | V1Deployment | V1DaemonSet
 ): V1LabelSelector {
   return controllerObj.spec.selector
+}
+async function getNode(
+  nodeNode: string,
+  coreClient: CoreV1Api
+): Promise<V1Node> {
+  const node = await coreClient.readNode(nodeNode)
+  return node.body
 }
 
 async function getFirstPod(
@@ -115,18 +123,19 @@ async function getImageDescriptors(
   if (pod == null) {
     return null
   }
+  const node = await getNode(pod.spec.nodeName, coreClient)
   return pod.spec.containers.map((container: V1Container): ImageDescriptor => {
     return {
       repository: getImageRepo(container),
       tag: getImageTag(container),
       hash: getImageHash(container, pod),
       // TODO: find nodes with this image in their cache, do not try and use the active pod list which is always in flux during rollouts/scaling etc
-      nodes: [],
+      nodes: [node.metadata.name],
       // For now we are going to sample based on this pod, in the real world their could be mixed usage in non homogenus clusters but
       // we aren't dealing with that yet
       //  TODO: need to pull node information from pod.spec.nodeName and get the arch from its spec.nodeInfo.architecture or spec.metadata.labels.kubernetes.io/arch
       // current test cluster is
-      arch: 'arm64',
+      arch: node.metadata.labels['kubernetes.io/arch'],
       owner: {
         type: getResourceType(controllerObj),
         namespace: controllerObj.metadata.namespace,

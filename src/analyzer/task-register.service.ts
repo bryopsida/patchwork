@@ -14,12 +14,16 @@ export class TaskRegisterService {
 
   @Timeout(5000)
   async handleTimeout(): Promise<void> {
-    this.logger.log('Ensuring fetch image list job is registered in queue')
+    const cron = process.env.PATCHWORK_UPDATE_CRON ?? '*/30 * * * *'
+    this.logger.log(
+      'Ensuring fetch image list job is registered in queue with cron %s',
+      cron
+    )
     await this.fetchImageListQueue.add(
       {},
       {
         repeat: {
-          cron: process.env.PATCHWORK_UPDATE_CRON ?? '*/30 * * * *',
+          cron,
         },
         attempts: -1,
         backoff: {
