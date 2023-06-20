@@ -20,7 +20,7 @@ export class ImageListWorker {
   @Process()
   async fetchImageList(job: Job<unknown>) {
     try {
-      this.logger.debug('Fetching list of images')
+      this.logger.log('Fetching list of images')
       const images = await this.k8sService.getImageList()
       this.logger.debug('Found images', images)
       // push jobs into the queue
