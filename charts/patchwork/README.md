@@ -43,7 +43,10 @@ A Helm chart for Kubernetes
 | podSecurityContext.fsGroup | int | `1001` |  |
 | podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | rbac.create | string | `"truewq"` |  |
-| redis.image.tag | string | `"7.0.11-alpine"` |  |
+| redis.image.pullPolicy | string | `"Always"` |  |
+| redis.image.registry | string | `"ghcr.io"` |  |
+| redis.image.repository | string | `"bryopsida/redis"` |  |
+| redis.image.tag | string | `"main"` |  |
 | replicaCount | int | `1` |  |
 | resources.limits.cpu | string | `"500m"` |  |
 | resources.limits.memory | string | `"256Mi"` |  |
