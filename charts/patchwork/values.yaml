@@ -87,4 +87,7 @@ tolerations: []
 affinity: {}
 redis:
   image:
-    tag: 7.0.11-alpine
+    registry: ghcr.io
+    repository: bryopsida/redis
+    tag: main
+    pullPolicy: Always
