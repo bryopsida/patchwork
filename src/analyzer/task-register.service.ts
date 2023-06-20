@@ -19,7 +19,7 @@ export class TaskRegisterService {
       {},
       {
         repeat: {
-          every: 120000,
+          cron: process.env.PATCHWORK_UPDATE_CRON ?? '*/30 * * * *',
         },
         attempts: -1,
         backoff: {

@@ -13,8 +13,10 @@ imagePullSecrets: []
 nameOverride: ''
 fullnameOverride: ''
 
+# - The cron string for update check frequency
+updateCron: '*/30 * * * *'
 rbac:
-  # if set, the chart will create a clusterrole and rolebinding to give it the permissions its needs
+  # - if set, the chart will create a clusterrole and rolebinding to give it the permissions its needs
   create: truewq
 serviceAccount:
   # Specifies whether a service account should be created
@@ -83,3 +85,9 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+redis:
+  image:
+    registry: ghcr.io
+    repository: bryopsida/redis
+    tag: main
+    pullPolicy: Always
