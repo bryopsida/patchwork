@@ -13,6 +13,12 @@ import { BackoffService } from './backoff.service'
     CommonModule,
     KubernetesModule,
   ],
-  providers: [UpdateWorker, BackoffService],
+  providers: [
+    UpdateWorker,
+    {
+      provide: 'BACKOFF_SERVICE',
+      useClass: BackoffService,
+    },
+  ],
 })
 export class PatcherModule {}

@@ -2,7 +2,7 @@ import { Processor, Process } from '@nestjs/bull'
 import { Inject, Logger } from '@nestjs/common'
 import { Job } from 'bull'
 import { IK8sService, ImageDescriptor } from '../kubernetes/k8s.service'
-import { BackoffService } from './backoff.service'
+import { IBackoffService } from './backoff.service'
 
 export interface ImageDescriptorUpdate extends ImageDescriptor {
   currentSha: string
@@ -13,11 +13,11 @@ export interface ImageDescriptorUpdate extends ImageDescriptor {
 export class UpdateWorker {
   private readonly logger = new Logger(UpdateWorker.name)
   private readonly k8sService: IK8sService
-  private readonly backoffService: BackoffService
+  private readonly backoffService: IBackoffService
 
   constructor(
     @Inject('K8S_SERVICE') k8s: IK8sService,
-    backoff: BackoffService
+    @Inject('BACKOFF_SERVICE') backoff: IBackoffService
   ) {
     this.k8sService = k8s
     this.backoffService = backoff

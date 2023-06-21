@@ -3,8 +3,12 @@ import { Redis } from 'ioredis'
 import { IConnOptionsService } from '../common/conn-options.service'
 import { ImageDescriptor } from '../kubernetes/k8s.service'
 
+export interface IBackoffService {
+  canIUpdate(descriptor: ImageDescriptor): Promise<boolean>
+}
+
 @Injectable()
-export class BackoffService implements OnModuleDestroy {
+export class BackoffService implements OnModuleDestroy, IBackoffService {
   private readonly redis: Redis
 
   constructor(
