@@ -9,5 +9,6 @@ stringData:
     PATCHWORK_REDIS_HOST={{ default (printf "%s-redis.%s.svc" .Release.Name .Release.Namespace) .Values.redis.host }}
     PATCHWORK_REDIS_PORT={{ default "6379" .Values.redis.port | int }}
     PATCHWORK_UPDATE_CRON={{ .Values.updateCron }}
+    PATCHWORK_RESTART_GRACE_PERIOD_SECONDS={{ .Values.updateGracePeriod }}
 
 {{- end }}

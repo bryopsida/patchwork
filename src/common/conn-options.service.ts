@@ -3,14 +3,18 @@ import { RedisOptions, Transport } from '@nestjs/microservices'
 import { MicroserviceHealthIndicatorOptions } from '@nestjs/terminus'
 import { config } from 'dotenv'
 
+export const TOKEN = 'CONN_OPTIONS_SERVICE'
 // ensure process.env is hydrated
 config({
   // items in .env take precedence
   override: true,
 })
+export interface IConnOptionsService {
+  getRedisOptions(): RedisOptions & MicroserviceHealthIndicatorOptions
+}
 
 @Injectable()
-export class ConnOptionsService {
+export class ConnOptionsService implements IConnOptionsService {
   private readonly logger = new Logger(ConnOptionsService.name)
 
   getRedisOptions(): RedisOptions & MicroserviceHealthIndicatorOptions {
