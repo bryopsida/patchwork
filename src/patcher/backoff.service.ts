@@ -1,13 +1,15 @@
-import { Injectable, OnModuleDestroy } from '@nestjs/common'
+import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common'
 import { Redis } from 'ioredis'
-import { ConnOptionsService } from '../common/conn-options.service'
+import { IConnOptionsService } from '../common/conn-options.service'
 import { ImageDescriptor } from '../kubernetes/k8s.service'
 
 @Injectable()
 export class BackoffService implements OnModuleDestroy {
   private readonly redis: Redis
 
-  constructor(connOptions: ConnOptionsService) {
+  constructor(
+    @Inject('CONN_OPTIONS_SERVICE') connOptions: IConnOptionsService
+  ) {
     const options = connOptions.getRedisOptions()
     this.redis = new Redis(options.options.port, options.options.host)
   }
@@ -18,7 +20,7 @@ export class BackoffService implements OnModuleDestroy {
 
   async canIUpdate(descriptor: ImageDescriptor): Promise<boolean> {
     const key = `patchwork:${descriptor.owner.namespace}:${descriptor.owner.type}:${descriptor.owner.name}:lastRestart`
-    const lastRestart = this.redis.get(key)
+    const lastRestart = await this.redis.get(key)
     if (lastRestart != null) {
       return false
     } else {

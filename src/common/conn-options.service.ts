@@ -8,9 +8,12 @@ config({
   // items in .env take precedence
   override: true,
 })
+export interface IConnOptionsService {
+  getRedisOptions(): RedisOptions & MicroserviceHealthIndicatorOptions
+}
 
 @Injectable()
-export class ConnOptionsService {
+export class ConnOptionsService implements IConnOptionsService {
   private readonly logger = new Logger(ConnOptionsService.name)
 
   getRedisOptions(): RedisOptions & MicroserviceHealthIndicatorOptions {

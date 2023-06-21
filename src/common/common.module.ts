@@ -3,6 +3,11 @@ import { ConnOptionsService } from './conn-options.service'
 
 @Module({
   providers: [ConnOptionsService],
-  exports: [ConnOptionsService],
+  exports: [
+    {
+      provide: 'CONN_OPTIONS_SERVICE',
+      useClass: ConnOptionsService,
+    },
+  ],
 })
 export class CommonModule {}
