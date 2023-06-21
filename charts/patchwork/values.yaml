@@ -15,6 +15,8 @@ fullnameOverride: ''
 
 # - The cron string for update check frequency
 updateCron: '*/30 * * * *'
+# - The amount of time after a resource is restarted where further updates will be skipped untill the period has expired
+updateGracePeriod: 3600
 rbac:
   # - if set, the chart will create a clusterrole and rolebinding to give it the permissions its needs
   create: truewq
