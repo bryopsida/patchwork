@@ -3,6 +3,7 @@ import { RedisOptions, Transport } from '@nestjs/microservices'
 import { MicroserviceHealthIndicatorOptions } from '@nestjs/terminus'
 import { config } from 'dotenv'
 
+export const TOKEN = 'CONN_OPTIONS_SERVICE'
 // ensure process.env is hydrated
 config({
   // items in .env take precedence
