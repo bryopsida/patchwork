@@ -4,14 +4,18 @@ import { CommonModule } from '../common/common.module'
 
 describe('BackoffService', () => {
   let service: BackoffService
+  let module: TestingModule
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [CommonModule],
       providers: [BackoffService],
     }).compile()
 
     service = module.get<BackoffService>(BackoffService)
+  })
+  afterEach(async () => {
+    await module.close()
   })
 
   it('should be defined', () => {
