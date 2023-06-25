@@ -36,7 +36,6 @@ export interface ImageDescriptor {
   nodes: string[]
   arch: string
   pullPolicy: string
-  strategy: string
 }
 
 export interface IK8sService {
@@ -101,17 +100,6 @@ function getPullPolicy(container: V1Container): string {
   return container.imagePullPolicy
 }
 
-function getRestartStrategy(
-  controllerObj: V1StatefulSet | V1Deployment | V1DaemonSet
-): string {
-  const val = controllerObj as any
-  if (val.spec.updateStrategy) {
-    return val.spec.updateStrategy.type
-  } else if (val.spec.strategy) {
-    return val.spec.strategy.type
-  }
-}
-
 function getResourceType(
   controllerObj: V1StatefulSet | V1Deployment | V1DaemonSet
 ): ResourceType {
@@ -144,7 +132,6 @@ async function getImageDescriptors(
   return pod.spec.containers.map((container: V1Container): ImageDescriptor => {
     return {
       pullPolicy: getPullPolicy(container),
-      strategy: getRestartStrategy(controllerObj),
       repository: getImageRepo(container),
       tag: getImageTag(container),
       hash: getImageHash(container, pod),
