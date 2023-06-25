@@ -104,12 +104,11 @@ function getPullPolicy(container: V1Container): string {
 function getRestartStrategy(
   controllerObj: V1StatefulSet | V1Deployment | V1DaemonSet
 ): string {
-  if (controllerObj instanceof V1StatefulSet) {
-    return controllerObj.spec.updateStrategy.type
-  } else if (controllerObj instanceof V1DaemonSet) {
-    return controllerObj.spec.updateStrategy.type
-  } else if (controllerObj instanceof V1Deployment) {
-    return controllerObj.spec.strategy.type
+  const val = controllerObj as any
+  if (val.spec.updateStrategy) {
+    return val.spec.updateStrategy.type
+  } else if (val.spec.strategy) {
+    return val.spec.strategy.type
   }
 }
 
