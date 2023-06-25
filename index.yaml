@@ -2,6 +2,23 @@ apiVersion: v1
 entries:
   patchwork:
   - apiVersion: v2
+    appVersion: 0.4.0
+    created: "2023-06-25T01:33:20.029544455Z"
+    dependencies:
+    - name: redis
+      repository: https://groundhog2k.github.io/helm-charts/
+      version: 0.6.12
+    description: Watches deployments, daemonsets, and statefulsets for image updates
+      and will automatically trigger rollouts to pull in updates
+    digest: 36cf15feebb8b8174119ffa8aa135a682d13ef08a093fa889ff4d838faee3b5b
+    maintainers:
+    - name: bryopsida
+    name: patchwork
+    type: application
+    urls:
+    - https://github.com/bryopsida/patchwork/releases/download/patchwork-0.6.0/patchwork-0.6.0.tgz
+    version: 0.6.0
+  - apiVersion: v2
     appVersion: 0.3.0
     created: "2023-06-21T02:49:05.0181696Z"
     dependencies:
@@ -82,4 +99,4 @@ entries:
     urls:
     - https://github.com/bryopsida/patchwork/releases/download/patchwork-0.2.1/patchwork-0.2.1.tgz
     version: 0.2.1
-generated: "2023-06-21T02:49:05.0181849Z"
+generated: "2023-06-25T01:33:20.029562155Z"
