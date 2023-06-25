@@ -18,7 +18,7 @@ export class ImageDescriptorWorker {
   }
 
   @Process()
-  async fetchImageList(job: Job<ImageDescriptor>) {
+  async checkForUpdates(job: Job<ImageDescriptor>) {
     try {
       this.logger.debug(
         `Checking for updates of ${job.data.repository}:${
