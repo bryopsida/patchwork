@@ -8,9 +8,8 @@ This inspects your statefulsets, daemonsets, deployments and checks the associat
 
 This is still very early in development and has a few limitations.
 
-1. Does not support private registries
-2. Does not pull updates for things without `imagePullPolicy = Always`
-3. Only looks for updates to the same tag, IE for cases where base patches have been pushed to a tag
+1. Does not pull updates for things without `imagePullPolicy = Always`
+2. Only looks for updates to the same tag, IE for cases where base patches have been pushed to a tag
 
 ## How to deploy
 

@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { K8sService } from './k8s.service'
+import { K8sService, ResourceType } from './k8s.service'
 import { AppsV1Api, CoreV1Api } from '@kubernetes/client-node'
 import { mock, when, instance, anything } from 'ts-mockito'
 
@@ -37,13 +37,191 @@ describe('K8sService', () => {
     expect(service).toBeDefined()
   })
 
+  it('should provide pull secret in descriptor when defind in pod', async () => {
+    when(mockAppApi.listDeploymentForAllNamespaces()).thenResolve({
+      response: {} as unknown as any,
+      body: {
+        items: [
+          {
+            metadata: {
+              namesace: 'TEST',
+            },
+            spec: {
+              selector: {
+                matchLabels: {
+                  test: 'TEST-DEPLOYMENT',
+                },
+              },
+            },
+          },
+        ],
+      } as unknown as any,
+    })
+    when(mockAppApi.listStatefulSetForAllNamespaces()).thenResolve({
+      response: {} as unknown as any,
+      body: {
+        items: [
+          {
+            metadata: {
+              namespace: 'TEST',
+            },
+            spec: {
+              selector: {
+                matchLabels: {
+                  test: 'TEST-DEPLOYMENT',
+                },
+              },
+            },
+          },
+        ],
+      } as unknown as any,
+    })
+    when(mockAppApi.listDaemonSetForAllNamespaces()).thenResolve({
+      response: {} as unknown as any,
+      body: {
+        items: [
+          {
+            metadata: {
+              namespace: 'TEST',
+            },
+            spec: {
+              selector: {
+                matchLabels: {
+                  test: 'TEST-DEPLOYMENT',
+                },
+              },
+            },
+          },
+        ],
+      } as unknown as any,
+    })
+    when(
+      mockCore.listNamespacedPod(
+        anything(),
+        anything(),
+        anything(),
+        anything(),
+        anything(),
+        anything()
+      )
+    ).thenResolve({
+      response: {} as unknown as any,
+      body: {
+        items: [
+          {
+            metadata: {
+              namespace: 'test-namespace',
+              name: 'test-pod',
+            },
+            status: {
+              containerStatuses: [
+                {
+                  name: 'test1',
+                  started: true,
+                  imageID: 'name@TEST',
+                },
+                {
+                  name: 'test2',
+                  started: true,
+                  imageID: 'name@TEST',
+                },
+              ],
+            },
+            spec: {
+              imagePullSecrets: [
+                {
+                  name: 'regcred',
+                },
+              ],
+              nodeName: 'TEST-NODE',
+              containers: [
+                {
+                  name: 'test1',
+                  image: 'docker.io/busybox:latest',
+                  imagePullPolicy: 'Always',
+                },
+                {
+                  name: 'test2',
+                  image: 'docker.io/alpine:latest',
+                  imagePullPolicy: 'Never',
+                },
+              ],
+            },
+          },
+        ] as unknown as any,
+      },
+    })
+    when(mockCore.readNode(anything())).thenResolve({
+      response: {} as unknown as any,
+      body: {
+        metadata: {
+          name: 'TEST-NODE',
+          labels: {},
+        },
+      } as unknown as any,
+    })
+    when(mockCore.readNamespacedSecret(anything(), anything())).thenResolve({
+      response: {} as unknown as any,
+      body: {
+        data: {
+          '.dockerconfigjson': Buffer.from(
+            JSON.stringify({
+              auths: {
+                'docker.io': {
+                  username: 'test',
+                  password: 'test',
+                },
+              },
+            })
+          ).toString('base64'),
+        },
+      },
+    })
+
+    // WHEN
+    const imageList = await service.getImageList()
+
+    expect(imageList.some((iD) => iD.pullSecret == null)).toBeFalsy()
+    expect(imageList.length).toEqual(3)
+  })
+
+  it('should decompose a pull secret to provide username and password for registry', async () => {
+    when(mockCore.readNamespacedSecret(anything(), anything())).thenResolve({
+      response: {} as unknown as any,
+      body: {
+        data: {
+          '.dockerconfigjson': Buffer.from(
+            JSON.stringify({
+              auths: {
+                'docker.io': {
+                  username: 'test',
+                  password: 'test',
+                },
+              },
+            })
+          ).toString('base64'),
+        },
+      },
+    })
+    const creds = await service.getPullSecretCredentials({
+      repository: 'docker.io/busybox',
+      tag: 'latest',
+      pullPolicy: 'Always',
+      hash: 'test',
+      nodes: [],
+      arch: 'linux/arm64',
+      pullSecret: 'regcred',
+      owner: {
+        name: 'test',
+        namespace: 'test',
+        type: ResourceType.DAEMONSET,
+      },
+    })
+    expect(creds.username).toEqual('test')
+    expect(creds.password).toEqual('test')
+  })
+
   it('should not return images without pullPolicy: always', async () => {
-    // GIVEN
-    /*
-        const allDeploymentsProm = this.appClient.listDeploymentForAllNamespaces()
-    const allDaemonsetsProm = this.appClient.listDaemonSetForAllNamespaces()
-    const allStatefulsetsProm = this.appClient.listStatefulSetForAllNamespaces()
-    */
     when(mockAppApi.listDeploymentForAllNamespaces()).thenResolve({
       response: {} as unknown as any,
       body: {
@@ -130,16 +308,16 @@ describe('K8sService', () => {
               ],
             },
             spec: {
-              nodeName: 'TEST-NODE',
+              nodeName: 'TEST-NODE-PS',
               containers: [
                 {
                   name: 'test1',
-                  image: 'busybox:latest',
+                  image: 'docker.io/busybox:latest',
                   imagePullPolicy: 'Always',
                 },
                 {
                   name: 'test2',
-                  image: 'alpine:latest',
+                  image: 'docker.io/alpine:latest',
                   imagePullPolicy: 'Never',
                 },
               ],

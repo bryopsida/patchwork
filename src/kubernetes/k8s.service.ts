@@ -12,6 +12,7 @@ import {
   PatchUtils,
   V1Node,
 } from '@kubernetes/client-node'
+import { parse } from 'psl'
 
 export enum ResourceType {
   // eslint-disable-next-line no-unused-vars
@@ -28,6 +29,11 @@ export interface Resource {
   namespace: string
 }
 
+export interface PullCredentials {
+  username: string
+  password: string
+}
+
 export interface ImageDescriptor {
   repository: string
   tag: string
@@ -35,12 +41,20 @@ export interface ImageDescriptor {
   owner: Resource
   nodes: string[]
   arch: string
+  pullSecret: string
   pullPolicy: string
 }
 
 export interface IK8sService {
   getImageList(): Promise<Array<ImageDescriptor>>
   triggerRollingUpdate(resource: Resource): Promise<void>
+  getPullSecretCredentials(
+    descriptor: ImageDescriptor
+  ): Promise<PullCredentials>
+}
+
+interface IPullSecretMap {
+  containers: Record<string, string>
 }
 
 function getSelector(
@@ -112,6 +126,44 @@ function getResourceType(
   }
 }
 
+async function getPullSecretMap(
+  pod: V1Pod,
+  client: CoreV1Api
+): Promise<IPullSecretMap> {
+  if (pod.spec.imagePullSecrets) {
+    const ret = {
+      containers: {},
+    }
+    for (const pullSecret of pod.spec.imagePullSecrets) {
+      const secretResponse = await client.readNamespacedSecret(
+        pullSecret.name,
+        pod.metadata.namespace
+      )
+      const secret = secretResponse.body
+      const dockerConfig = JSON.parse(
+        Buffer.from(secret.data['.dockerconfigjson'], 'base64').toString(
+          'utf-8'
+        )
+      )
+      const registries = Object.keys(dockerConfig.auths).map((url) =>
+        parse(url)
+      )
+      for (const reg of registries) {
+        for (const cont of pod.spec.containers) {
+          if (cont.image.indexOf(reg.domain as string) !== -1) {
+            ret.containers[cont.name] = pullSecret.name
+          }
+        }
+      }
+    }
+    return ret
+  } else {
+    return {
+      containers: {},
+    }
+  }
+}
+
 async function getImageDescriptors(
   controllerObj: V1StatefulSet | V1Deployment | V1DaemonSet,
   coreClient: CoreV1Api
@@ -125,9 +177,9 @@ async function getImageDescriptors(
     controllerObj.metadata.namespace,
     coreClient
   )
-  if (pod == null) {
-    return null
-  }
+
+  const pullSecrets = await getPullSecretMap(pod, coreClient)
+
   const node = await getNode(pod.spec.nodeName, coreClient)
   return pod.spec.containers.map((container: V1Container): ImageDescriptor => {
     return {
@@ -135,12 +187,8 @@ async function getImageDescriptors(
       repository: getImageRepo(container),
       tag: getImageTag(container),
       hash: getImageHash(container, pod),
-      // TODO: find nodes with this image in their cache, do not try and use the active pod list which is always in flux during rollouts/scaling etc
+      pullSecret: pullSecrets.containers[container.name],
       nodes: [node.metadata.name],
-      // For now we are going to sample based on this pod, in the real world their could be mixed usage in non homogenus clusters but
-      // we aren't dealing with that yet
-      //  TODO: need to pull node information from pod.spec.nodeName and get the arch from its spec.nodeInfo.architecture or spec.metadata.labels.kubernetes.io/arch
-      // current test cluster is
       arch: node.metadata.labels['kubernetes.io/arch'],
       owner: {
         type: getResourceType(controllerObj),
@@ -255,5 +303,27 @@ export class K8sService implements IK8sService {
       resource.name,
       resource.namespace
     )
+  }
+
+  async getPullSecretCredentials(
+    descriptor: ImageDescriptor
+  ): Promise<PullCredentials> {
+    const secret = await this.coreClient.readNamespacedSecret(
+      descriptor.pullSecret,
+      descriptor.owner.namespace
+    )
+    const dockerConfig = JSON.parse(
+      Buffer.from(secret.body.data['.dockerconfigjson'], 'base64').toString(
+        'utf-8'
+      )
+    )
+    const registries = Object.keys(dockerConfig.auths)
+    for (const registry of registries) {
+      const parsedDomain = parse(registry)
+      if (descriptor.repository.indexOf(parsedDomain.domain) !== -1) {
+        return dockerConfig.auths[registry]
+      }
+    }
+    return null
   }
 }
