@@ -73,7 +73,10 @@ export class ImageDescriptorWorker {
           architecture: job.data.arch,
         }
       )
-      if (manifest == null || manifest?.indexDigest == null) {
+      if (
+        manifest == null ||
+        (manifest?.indexDigest == null && manifest.manifestDigest == null)
+      ) {
         this.logger.warn(
           'Failed to get a workable manifest for %s with tag %s from registry %s',
           repo,
@@ -81,14 +84,12 @@ export class ImageDescriptorWorker {
           registry
         )
       }
+      const digest = manifest.indexDigest ?? manifest.manifestDigest
       this.logger.debug(
-        `Fetched manifest digest = ${manifest?.indexDigest}, running hash = ${job.data.hash}, repo = ${job.data.repository}`,
+        `Fetched manifest digest = ${digest}, running hash = ${job.data.hash}, repo = ${job.data.repository}`,
         manifest
       )
-      if (
-        manifest.indexDigest !== job.data.hash &&
-        manifest.indexDigest != null
-      ) {
+      if (digest !== job.data.hash && digest != null) {
         this.logger.warn(
           `Found an update for ${registry}/${repo}:${job.data.tag}`
         )
@@ -97,19 +98,19 @@ export class ImageDescriptorWorker {
           ...job.data,
           ...{
             currentSha: job.data.hash,
-            targetSha: manifest.indexDigest,
+            targetSha: digest,
           },
         })
         return {
           detectedUpdate: true,
           current: job.data.hash,
-          detectedLatest: manifest.indexDigest,
+          detectedLatest: digest,
         }
       } else {
         return {
           detectedUpdate: false,
           current: job.data.hash,
-          detectedLatest: manifest.indexDigest,
+          detectedLatest: digest,
         }
       }
     } catch (err) {
