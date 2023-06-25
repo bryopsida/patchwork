@@ -37,13 +37,11 @@ describe('K8sService', () => {
     expect(service).toBeDefined()
   })
 
+  it('should provide pull secret in descriptor when defind in pod', async () => {})
+
+  it('should decompose a pull secret to provide username and password for registry', async () => {})
+
   it('should not return images without pullPolicy: always', async () => {
-    // GIVEN
-    /*
-        const allDeploymentsProm = this.appClient.listDeploymentForAllNamespaces()
-    const allDaemonsetsProm = this.appClient.listDaemonSetForAllNamespaces()
-    const allStatefulsetsProm = this.appClient.listStatefulSetForAllNamespaces()
-    */
     when(mockAppApi.listDeploymentForAllNamespaces()).thenResolve({
       response: {} as unknown as any,
       body: {
