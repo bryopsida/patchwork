@@ -12,6 +12,7 @@ import {
   PatchUtils,
   V1Node,
 } from '@kubernetes/client-node'
+import { parse } from 'psl'
 
 export enum ResourceType {
   // eslint-disable-next-line no-unused-vars
@@ -28,6 +29,11 @@ export interface Resource {
   namespace: string
 }
 
+export interface PullCredentials {
+  username: string
+  password: string
+}
+
 export interface ImageDescriptor {
   repository: string
   tag: string
@@ -42,6 +48,9 @@ export interface ImageDescriptor {
 export interface IK8sService {
   getImageList(): Promise<Array<ImageDescriptor>>
   triggerRollingUpdate(resource: Resource): Promise<void>
+  getPullSecretCredentials(
+    descriptor: ImageDescriptor
+  ): Promise<PullCredentials>
 }
 
 interface IPullSecretMap {
@@ -127,8 +136,8 @@ async function getPullSecretMap(
     }
     for (const pullSecret of pod.spec.imagePullSecrets) {
       const secretResponse = await client.readNamespacedSecret(
-        pod.metadata.name,
-        pullSecret.name
+        pullSecret.name,
+        pod.metadata.namespace
       )
       const secret = secretResponse.body
       const dockerConfig = JSON.parse(
@@ -136,12 +145,12 @@ async function getPullSecretMap(
           'utf-8'
         )
       )
-      const registries = Object.keys(dockerConfig.auths).map(
-        (url) => new URL(url)
+      const registries = Object.keys(dockerConfig.auths).map((url) =>
+        parse(url)
       )
       for (const reg of registries) {
         for (const cont of pod.spec.containers) {
-          if (cont.image.indexOf(reg.hostname) !== -1) {
+          if (cont.image.indexOf(reg.domain as string) !== -1) {
             ret.containers[cont.name] = pullSecret.name
           }
         }
@@ -294,5 +303,27 @@ export class K8sService implements IK8sService {
       resource.name,
       resource.namespace
     )
+  }
+
+  async getPullSecretCredentials(
+    descriptor: ImageDescriptor
+  ): Promise<PullCredentials> {
+    const secret = await this.coreClient.readNamespacedSecret(
+      descriptor.pullSecret,
+      descriptor.owner.namespace
+    )
+    const dockerConfig = JSON.parse(
+      Buffer.from(secret.body.data['.dockerconfigjson'], 'base64').toString(
+        'utf-8'
+      )
+    )
+    const registries = Object.keys(dockerConfig.auths)
+    for (const registry of registries) {
+      const parsedDomain = parse(registry)
+      if (descriptor.repository.indexOf(parsedDomain.domain) !== -1) {
+        return dockerConfig.auths[registry]
+      }
+    }
+    return null
   }
 }

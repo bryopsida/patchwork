@@ -1,15 +1,20 @@
 import { Processor, Process, InjectQueue } from '@nestjs/bull'
-import { Logger } from '@nestjs/common'
+import { Inject, Logger } from '@nestjs/common'
 import { Job, Queue } from 'bull'
-import { ImageDescriptor } from '../kubernetes/k8s.service'
+import { IK8sService, ImageDescriptor } from '../kubernetes/k8s.service'
 import { getManifest, contentTypes } from '@snyk/docker-registry-v2-client'
 @Processor('analyzer.check.updates')
 export class ImageDescriptorWorker {
   private readonly logger = new Logger(ImageDescriptorWorker.name)
   private readonly patchQueue: Queue
+  private readonly k8sService: IK8sService
 
-  constructor(@InjectQueue('patcher.update') queue: Queue) {
+  constructor(
+    @InjectQueue('patcher.update') queue: Queue,
+    @Inject('K8S_SERVICE') k8sService: IK8sService
+  ) {
     this.patchQueue = queue
+    this.k8sService = k8sService
   }
 
   @Process()
@@ -49,12 +54,19 @@ export class ImageDescriptorWorker {
               acceptManifest: `${contentTypes.MANIFEST_V2}, ${contentTypes.MANIFEST_LIST_V2}, ${contentTypes.OCI_INDEX_V1}, ${contentTypes.OCI_MANIFEST_V1}`,
             }
           : undefined
+      let username
+      let password
+      if (job.data.pullSecret) {
+        const creds = await this.k8sService.getPullSecretCredentials(job.data)
+        username = creds.username
+        password = creds.password
+      }
       const manifest = await getManifest(
         registry,
         repo,
         job.data.tag,
-        undefined,
-        undefined,
+        username,
+        password,
         reqOptions,
         {
           os: 'linux',
