@@ -2,8 +2,8 @@ apiVersion: v2
 name: patchwork
 description: Watches deployments, daemonsets, and statefulsets for image updates and will automatically trigger rollouts to pull in updates
 type: application
-version: 0.5.0
-appVersion: '0.3.0'
+version: 0.6.0
+appVersion: '0.4.0'
 dependencies:
   - name: redis
     repository: https://groundhog2k.github.io/helm-charts/

@@ -10,8 +10,7 @@ This is still very early in development and has a few limitations.
 
 1. Does not support private registries
 2. Does not pull updates for things without `imagePullPolicy = Always`
-3. Only supports querying `linux/arm64` image repositories at the moment
-4. Only looks for updates to the same tag, IE for cases where base patches have been pushed to a tag
+3. Only looks for updates to the same tag, IE for cases where base patches have been pushed to a tag
 
 ## How to deploy
 

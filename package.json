@@ -1,6 +1,6 @@
 {
   "name": "patchwork",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "",
   "author": "",
   "private": true,
@@ -73,6 +73,7 @@
     "testcontainers": "^9.9.1",
     "ts-jest": "29.1.0",
     "ts-loader": "^9.2.3",
+    "ts-mockito": "^2.6.1",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "4.2.0",
     "typescript": "^5.0.0"

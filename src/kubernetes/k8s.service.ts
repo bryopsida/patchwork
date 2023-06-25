@@ -35,6 +35,7 @@ export interface ImageDescriptor {
   owner: Resource
   nodes: string[]
   arch: string
+  pullPolicy: string
 }
 
 export interface IK8sService {
@@ -95,6 +96,10 @@ function getImageHash(container: V1Container, pod: V1Pod): string {
   return matchedStatuses[0].imageID.split('@')[1]
 }
 
+function getPullPolicy(container: V1Container): string {
+  return container.imagePullPolicy
+}
+
 function getResourceType(
   controllerObj: V1StatefulSet | V1Deployment | V1DaemonSet
 ): ResourceType {
@@ -126,6 +131,7 @@ async function getImageDescriptors(
   const node = await getNode(pod.spec.nodeName, coreClient)
   return pod.spec.containers.map((container: V1Container): ImageDescriptor => {
     return {
+      pullPolicy: getPullPolicy(container),
       repository: getImageRepo(container),
       tag: getImageTag(container),
       hash: getImageHash(container, pod),
@@ -183,7 +189,7 @@ export class K8sService implements IK8sService {
       )
     )
       .flat()
-      .filter((obj) => obj != null)
+      .filter((obj) => obj != null && obj.pullPolicy === 'Always')
   }
 
   async triggerRollingUpdate(resource: Resource): Promise<void> {
