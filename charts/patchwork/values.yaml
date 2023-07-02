@@ -93,3 +93,7 @@ redis:
     repository: bryopsida/redis
     tag: main
     pullPolicy: Always
+
+psaPatcher:
+  # -- enable the psa patcher
+  enabled: false
