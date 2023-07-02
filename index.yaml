@@ -3,6 +3,28 @@ entries:
   patchwork:
   - apiVersion: v2
     appVersion: 0.4.0
+    created: "2023-07-02T12:28:18.057466537Z"
+    dependencies:
+    - name: redis
+      repository: https://groundhog2k.github.io/helm-charts/
+      version: 0.6.12
+    - alias: psaPatcher
+      condition: psaPatcher.enabled
+      name: psa-restricted-patcher
+      repository: https://bryopsida.github.io/psa-restricted-patcher/
+      version: 0.10.0
+    description: Watches deployments, daemonsets, and statefulsets for image updates
+      and will automatically trigger rollouts to pull in updates
+    digest: a33f76bcded4dc5a4bc494789a2457a995413ea89fb7f11ce551f6994f77545d
+    maintainers:
+    - name: bryopsida
+    name: patchwork
+    type: application
+    urls:
+    - https://github.com/bryopsida/patchwork/releases/download/patchwork-0.8.0/patchwork-0.8.0.tgz
+    version: 0.8.0
+  - apiVersion: v2
+    appVersion: 0.4.0
     created: "2023-06-25T18:21:24.212700394Z"
     dependencies:
     - name: redis
@@ -116,4 +138,4 @@ entries:
     urls:
     - https://github.com/bryopsida/patchwork/releases/download/patchwork-0.2.1/patchwork-0.2.1.tgz
     version: 0.2.1
-generated: "2023-06-25T18:21:24.212736294Z"
+generated: "2023-07-02T12:28:18.057806044Z"
