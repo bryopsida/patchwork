@@ -2,5 +2,8 @@ dependencies:
 - name: redis
   repository: https://groundhog2k.github.io/helm-charts/
   version: 0.6.12
-digest: sha256:63d822d52425251da228046b414e0e7b81cddb44c216291934b8959fd4bad8bd
-generated: "2023-06-18T08:08:56.361031-05:00"
+- name: psa-restricted-patcher
+  repository: https://bryopsida.github.io/psa-restricted-patcher/
+  version: 0.10.0
+digest: sha256:2d78700b07cd65fb043c739b9f89aa7572b252fdfd3f490feab45c25659c3b56
+generated: "2023-07-02T06:59:56.647998-05:00"
