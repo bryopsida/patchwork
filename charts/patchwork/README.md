@@ -43,6 +43,7 @@ Watches deployments, daemonsets, and statefulsets for image updates and will aut
 | podAnnotations | object | `{}` |  |
 | podSecurityContext.fsGroup | int | `1001` |  |
 | podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
+| psaPatcher | object | `{"enabled":false}` | control the psa-restricted-patcher behavior, disabled by default, for more information see: https://artifacthub.io/packages/helm/psa-restricted-patcher/psa-restricted-patcher |
 | psaPatcher.enabled | bool | `false` | enable the psa patcher |
 | rbac.create | string | `"truewq"` |  |
 | redis.image.pullPolicy | string | `"Always"` |  |
