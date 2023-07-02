@@ -94,6 +94,6 @@ redis:
     tag: main
     pullPolicy: Always
 # -- control the psa-restricted-patcher behavior, disabled by default, for more information see: https://artifacthub.io/packages/helm/psa-restricted-patcher/psa-restricted-patcher
-psaPatcher:
+psa-patcher:
   # -- enable the psa patcher
   enabled: false
