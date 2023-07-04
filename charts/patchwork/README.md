@@ -1,6 +1,6 @@
 # patchwork
 
-![Version: 0.8.0](https://img.shields.io/badge/Version-0.8.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.4.0](https://img.shields.io/badge/AppVersion-0.4.0-informational?style=flat-square)
+![Version: 0.8.1](https://img.shields.io/badge/Version-0.8.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.4.0](https://img.shields.io/badge/AppVersion-0.4.0-informational?style=flat-square)
 
 Watches deployments, daemonsets, and statefulsets for image updates and will automatically trigger rollouts to pull in updates
 
@@ -14,7 +14,7 @@ Watches deployments, daemonsets, and statefulsets for image updates and will aut
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://bryopsida.github.io/psa-restricted-patcher/ | psaPatcher(psa-restricted-patcher) | 0.10.0 |
+| https://bryopsida.github.io/psa-restricted-patcher/ | psa-patcher(psa-restricted-patcher) | 0.10.0 |
 | https://groundhog2k.github.io/helm-charts/ | redis | 0.6.12 |
 
 ## Values
@@ -43,8 +43,8 @@ Watches deployments, daemonsets, and statefulsets for image updates and will aut
 | podAnnotations | object | `{}` |  |
 | podSecurityContext.fsGroup | int | `1001` |  |
 | podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
-| psaPatcher | object | `{"enabled":false}` | control the psa-restricted-patcher behavior, disabled by default, for more information see: https://artifacthub.io/packages/helm/psa-restricted-patcher/psa-restricted-patcher |
-| psaPatcher.enabled | bool | `false` | enable the psa patcher |
+| psa-patcher | object | `{"enabled":false}` | control the psa-restricted-patcher behavior, disabled by default, for more information see: https://artifacthub.io/packages/helm/psa-restricted-patcher/psa-restricted-patcher |
+| psa-patcher.enabled | bool | `false` | enable the psa patcher |
 | rbac.create | string | `"truewq"` |  |
 | redis.image.pullPolicy | string | `"Always"` |  |
 | redis.image.registry | string | `"ghcr.io"` |  |
