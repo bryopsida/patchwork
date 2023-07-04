@@ -10,7 +10,7 @@ dependencies:
     version: 0.6.12
   - name: psa-restricted-patcher
     repository: https://bryopsida.github.io/psa-restricted-patcher/
-    version: 0.10.0
+    version: 0.10.1
     condition: psa-patcher.enabled
     alias: psa-patcher
 maintainers:

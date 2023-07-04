@@ -4,6 +4,6 @@ dependencies:
   version: 0.6.12
 - name: psa-restricted-patcher
   repository: https://bryopsida.github.io/psa-restricted-patcher/
-  version: 0.10.0
-digest: sha256:a15db5ce71df28e3d593db87d78908c80791f71038533d765db8cba78b772aeb
-generated: "2023-07-03T18:58:00.665815-05:00"
+  version: 0.10.1
+digest: sha256:3b98759704d5a75bcc3acba07a0c11a6eced8462b2e15af9c8ec650a558c460b
+generated: "2023-07-04T17:30:52.858304224Z"
