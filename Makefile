@@ -4,3 +4,6 @@ HELM_IMAGE_TAG ?= main
 
 helmDeploy:
 	helm upgrade --install --namespace=$(HELM_NAMESPACE) $(HELM_RELEASE_NAME) charts/patchwork --set image.tag=$(HELM_IMAGE_TAG) --debug --wait $(HELM_EXTRA_ARGS)
+
+helmDocs:
+	docker run --rm --volume "$$PWD:/helm-docs" jnorwood/helm-docs:latest
