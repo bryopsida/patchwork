@@ -15,7 +15,7 @@ Watches deployments, daemonsets, and statefulsets for image updates and will aut
 | Repository | Name | Version |
 |------------|------|---------|
 | https://bryopsida.github.io/psa-restricted-patcher/ | psa-patcher(psa-restricted-patcher) | 0.10.1 |
-| https://groundhog2k.github.io/helm-charts/ | redis | 0.6.14 |
+| https://groundhog2k.github.io/helm-charts/ | redis | 0.7.5 |
 
 ## Values
 
